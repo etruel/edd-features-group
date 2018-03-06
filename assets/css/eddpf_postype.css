@@ -1,0 +1,56 @@
+.eddpf_delete{
+			position: absolute; 
+			right: 0; 
+			top:0;
+			padding: 0 10px;
+		    background: #d62b2b !important;
+		    border-color: #a91c1c #980e0e #980e0e !important;
+		    -webkit-box-shadow: 0 1px 0 #980e0e !important;
+		    box-shadow: 0 1px 0 #980e0e !important;
+		    color: #fff !important;
+		    text-decoration: none;
+		    text-shadow: 0 -1px 1px #980e0e, 1px 0 1px #980e0e, 0 1px 1px #980e0e, -1px 0 1px #980e0e;
+		}
+		.eddpf_delete:hover{
+			background: #f12f2f !important;
+			border-color: #bb1c1c !important;
+		}
+		.eddpf_delete .dashicons{
+			vertical-align: -5px;
+		}
+		.tr_main{
+			display: flex; 
+			flex-direction: column; 
+			position: relative; 
+			padding-bottom: 25px; 
+			margin-bottom: 30px; 
+			border-bottom: 1px solid #ddd;
+			padding-left: 10px;
+			padding-right: 10px;
+		}
+		.tr_main:last-child{
+			border-bottom: 0 !important;
+			margin-bottom: 0 !important;
+			padding-bottom: 0 !important;
+		}
+		.tr_main td{
+			width: 100%;
+		}
+		.tr_main td label{
+			font-weight: 600;
+		}
+		.tr_main td input[type=text]{
+			width: 50%;
+			margin-bottom: 10px;
+		}
+		.tr_main td textarea{
+			width: 100%;
+		}
+		@media (max-width: 767px){
+			.tr_main{
+				padding-top: 25px;
+			}
+			.tr_main td input[type=text]{
+				width: 100% !important;
+			}
+		}

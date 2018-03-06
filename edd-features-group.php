@@ -16,10 +16,43 @@
  */
 
 //scripts
-add_action( 'admin_enqueue_scripts', 'eddpf_select2_enqueue' );
-function eddpf_select2_enqueue(){
-	wp_enqueue_style('eddpf_enqueue_css', plugin_dir_url( __FILE__ ).'assets/css/eddpf_enqueue.css' );
-	wp_enqueue_script('eddpf_enqueue_js', plugin_dir_url( __FILE__ ).'assets/js/eddpf_enqueue.js', array('jquery') );
+add_action( 'admin_enqueue_scripts', 'eddpf_enqueue' );
+function eddpf_checking_postype($postype)
+{
+	$eddpf_postype_settings = get_option('eddpf_postype_settings',array());
+	$result = false;
+	foreach ($eddpf_postype_settings as $postype_value) {
+		if($postype==$postype_value){
+			$result = true;
+		}
+	}
+	return $result;
+}
+
+function eddpf_enqueue()
+{
+	global $post;
+
+	if(isset($post->post_type)){
+		if($post->post_type=='eddpf_postype'){
+			wp_enqueue_script('eddpf_postype_js', plugin_dir_url( __FILE__ ).'assets/js/eddpf_postype.js',array('jquery'));
+			wp_enqueue_style('eddpf_postype_css', plugin_dir_url( __FILE__ ).'assets/css/eddpf_postype.css' );
+			wp_localize_script('eddpf_postype_js','eddpf_object',array(
+				'trad_delete'=>__('Delete','edd-features-group'),
+				'trad_confirm'=>__('Do you want to delete this feature','edd-features-group')
+			));
+		}else if(eddpf_checking_postype($post->post_type)){
+			wp_enqueue_script('eddpf_postype_single_js', plugin_dir_url( __FILE__ ).'assets/js/eddpf_postype_single.js',array('jquery'));
+
+			wp_localize_script('eddpf_postype_single_js','eddpf_object',array(
+				'nonce'=> wp_create_nonce('eddpf_nonce'),
+				'trad_loading'=>__('Loading','edd-features-group')
+			));
+		}
+	}
+
+	//wp_enqueue_style('eddpf_enqueue_css', plugin_dir_url( __FILE__ ).'assets/css/eddpf_enqueue.css' );
+	//wp_enqueue_style('style_enqueue_css', plugin_dir_url( __FILE__ ).'assets/css/style.css' );
 }
 //create settings page
 add_action('admin_menu', 'eddpf_submenu_settings');
@@ -67,17 +100,18 @@ function eddpf_config_postype(){
 				$checked_val = '';
 				if(count($eddpf_postype_settings)>0){
 					$post_val = array_search($data_value,$eddpf_postype_settings);
-					if($eddpf_postype_settings[$post_val]==$data_value) $checked_val='checked';
 				}
-				echo '<tr>';
-				echo '<td style="padding:10px;">';
-				echo '<input type="checkbox" name="eddpf_postype[]" '.$checked_val.' value="'.esc_attr($data_value).'">'.$data_value;
-				echo '</td>';
-				echo '</tr>';
+				?>
+				<tr>
+				<td style="padding:10px;">
+					<input type="checkbox" <?php checked($eddpf_postype_settings[$post_val],$data_value); ?> name="eddpf_postype[]"  value="<?php echo esc_attr($data_value) ?>"> <?php echo $data_value; ?>
+				</td>
+				</tr>
+				<?php
 			}	
 	}
 	echo '<tr>
-		<td colspan="2" style="padding:15px;"><input type="submit" value="Save Data" class="button button-primary"></td>
+		<td colspan="2" style="padding:15px;"><input type="submit" value="'.__("Save Data","edd-features-group").'" class="button button-primary"></td>
 	</tr>';
 	echo '</table>
 	</form>';
@@ -93,8 +127,8 @@ function features_list_help() {
 		require(  dirname( __FILE__ ) . '/features_list_help.php' );
 }
 
-add_action('init','eddpf_postype');
-function eddpf_postype(){
+add_action('init','eddpf_create_postype');
+function eddpf_create_postype(){
 		$labels = array(
 			'name' => __('Features Groups','edd-features-group'),
 			'singular_name' => __('Features Group','edd-features-group'),
@@ -135,76 +169,6 @@ function eddpf_add_metabox() {
 function eddpf_add_metabox_callback($post) {	
 	$eddpf_features = (array) get_post_meta($post->ID,'eddpf_features',true);
 	?>
-	<script type="text/javascript">
-		jQuery(document).ready(function($){
-			$("#eddpf_addfeatures").on('click',function(){
-				add_feature = $(".tr_parent").clone().removeClass('tr_parent');
-				add_feature.find('td input[type="text"]').val("");
-				add_feature.find('td textarea').val("");
-				add_feature.find('td').eq(2).append('<button type="button" class="button eddpf_delete"><span class="dashicons dashicons-no"></span></button>');
-				$("#eddpf_table").append(add_feature);
-			});
-			$(document).on('click','.eddpf_delete',function(){
-				$(this).parent().parent().remove();
-			});
-		});
-	</script>
-	<style>
-		.eddpf_delete{
-			position: absolute; 
-			right: 0; 
-			top:0;
-			padding: 0 10px;
-		    background: #d62b2b !important;
-		    border-color: #a91c1c #980e0e #980e0e !important;
-		    -webkit-box-shadow: 0 1px 0 #980e0e !important;
-		    box-shadow: 0 1px 0 #980e0e !important;
-		    color: #fff !important;
-		    text-decoration: none;
-		    text-shadow: 0 -1px 1px #980e0e, 1px 0 1px #980e0e, 0 1px 1px #980e0e, -1px 0 1px #980e0e;
-		}
-		.eddpf_delete:hover{
-			background: #f12f2f !important;
-			border-color: #bb1c1c !important;
-		}
-		.eddpf_delete .dashicons{
-			vertical-align: -5px;
-		}
-		.tr_main{
-			display: flex; 
-			flex-direction: column; 
-			position: relative; 
-			padding-bottom: 25px; 
-			margin-bottom: 30px; 
-			border-bottom: 1px solid #ddd;
-		}
-		.tr_main:last-child{
-			border-bottom: 0 !important;
-			margin-bottom: 0 !important;
-			padding-bottom: 0 !important;
-		}
-		.tr_main td{
-			width: 100%;
-		}
-		.tr_main td label{
-			font-weight: 600;
-		}
-		.tr_main td input[type=text]{
-			width: 50%;
-			margin-bottom: 10px;
-		}
-		.tr_main td textarea{
-			width: 100%;
-		}
-		@media (max-width: 767px){
-			.tr_main{
-				padding-top: 25px;
-			}
-			.tr_main td input[type=text]{
-				width: 100% !important;
-			}
-		}
-	</style>
 	<table style="width: 100%; text-align: left;" id="eddpf_table">
 			<?php if(count($eddpf_features)<=0){ ?>
 			<tr class="tr_parent tr_main">
@@ -222,7 +186,7 @@ function eddpf_add_metabox_callback($post) {
 				<td><input type="text" name="eddpf_title[]" value="<?php echo esc_attr($value['title']); ?>"></td>
 				<td><label><?php _e('Description','edd-features-group') ?></label></td>
 				<td><textarea name="eddpf_description[]" rows="3"><?php echo esc_attr($value['description']);  ?></textarea></td>
-				<td style="width: 5%;"><?php if($data_index>0) echo '<button type="button" class="button eddpf_delete"><span class="dashicons dashicons-no"></span></button>'; ?></td>
+				<td style="width: 5%;"><?php if($data_index>0) echo '<button type="button" class="button eddpf_delete" title="'._e("Delete","edd-features-group").'">X</button>'; ?></td>
 			</tr>	
 			<?php } 
 			}?>
@@ -265,10 +229,10 @@ function eddpf_ajax_post_callback(){
 	$features_template = '';
 	// you can use WP_Query, query_posts() or get_posts() here - it doesn't matter
 	$search_results = new WP_Query( array( 
-		's'=> $_GET['q'], // the search query
+		'p'=> sanitize_text_field($_POST['p']), // the search query
 		'post_status' => 'publish', // if you don't want drafts to be returned
 		'ignore_sticky_posts' => 1,
-		'posts_per_page' => 50, // how much to show at oncem
+		'posts_per_page' => 1, // how much to show at oncem
 		'post_type'=>'eddpf_postype'
 	) );
 	$features_template.='<table width="100%" border="1" cellspacing="0">';
@@ -302,82 +266,51 @@ function eddpf_ajax_post_callback(){
 }
 
 //metabox  in posttype product
-add_action('add_meta_boxes','eddpf_features_setting');
-function eddpf_features_setting(){
+add_action('add_meta_boxes','eddpf_features_single');
+function eddpf_features_single(){
 	$eddpf_postype_settings = get_option('eddpf_postype_settings',array());
 	if(count($eddpf_postype_settings)<=0){
 		$eddpf_postype_settings = get_post_types();
 		unset($eddpf_postype_settings[array_search('eddpf_postype',$eddpf_postype_settings)]);
 	}
-	add_meta_box('eddpf_feature_metabox_setting', __('Features Group','edd-features-group'),'eddpf_features_setting_callback', array($eddpf_postype_settings), 'normal', 'default');
+	add_meta_box('eddpf_feature_metabox_setting', __('Features Group','edd-features-group'),'eddpf_features_single_callback', array($eddpf_postype_settings), 'normal', 'default');
 }
-function eddpf_features_setting_callback($post) {
-	$eddpf_features_setting = get_post_meta($post->ID,'eddpf_features_setting',true);
-	$features_id = get_post_meta($post->ID, 'eddpf_features_id',true);
-	$eddpf_features = get_post_meta($features_id,'eddpf_features',true);
-	$nonce = wp_create_nonce('eddpf_nonce');
+function eddpf_features_single_callback($post) {
+	$eddpf_features_single = empty(get_post_meta($post->ID,'eddpf_features_single',true)) ? false : get_post_meta($post->ID,'eddpf_features_single',true);
+	$features_id = empty(get_post_meta($post->ID, 'eddpf_features_id',true)) ? false : get_post_meta($post->ID, 'eddpf_features_id',true);
+	$eddpf_features = empty(get_post_meta($features_id,'eddpf_features',true)) ? false : get_post_meta($features_id,'eddpf_features',true);
+	
+
 ?>
-	<script type="text/javascript">
-		jQuery(function($){
-			// simple multiple select
-			var template_features = '';
-			// multiple select with AJAX search
-			$('#eddpf_select2_posts').select2({
-		  		ajax: {
-		    			url: ajaxurl, // AJAX URL is predefined in WordPress admin
-		    			dataType: 'json',
-		    			delay: 250, // delay in ms while typing when to perform a AJAX search
-		    			data: function (params) {
-		      				return {
-		        				q: params.term, // search query
-		        				action: 'eddpf_ajax_post', // AJAX action for admin-ajax.php
-								_ajax_nonce : '<?php echo $nonce; ?>'
-		      					
-		      				};
-		    			},
-		    			processResults: function( data ) {
-						var options = [];
-						if ( data ) {
-							// data is the array of arrays, and each of them contains ID and the Label of the option
-							$.each( data, function( index, text ) { // do not forget that "index" is just auto incremented value
-								options.push( { id: text[0], text: text[1],template:text[2]  } );
-								template_features = text[2];
-							});
-						}
-						return {
-							results: options
-						};
-					},
-					cache: true
-				},
-				minimumInputLength: 3 // the minimum of symbols to input before perform a search
-			});
-			$(document).on("change","#eddpf_select2_posts",function(){
-		 		$("#eddpf_section_features").html(template_features);
-			});
-		});
-		
-	</script>
 	<!--ShortCode Description-->
 	<p><?php _e('To visualize these characteristics in the products you must insert the following shortcode <b>[edd-features-group]</b> in the description of the same','edd-features-group') ?></p>
 	<!--select 2-->
+	<?php
+		$args = array(
+		'post_type' => 'eddpf_postype',
+		'posts_per_page'=>'50'
+		);
+		$query = new WP_Query( $args ); 
+	?>
 	<select id="eddpf_select2_posts" name="eddpf_select2_posts">
 		<option value=""><?php _e('Search Features','edd-features-group'); ?></option>
-		<?php if(isset($features_id) && $features_id!=''){ ?>
-			<option selected="selected" value="<?php echo esc_attr($features_id); ?>"><?php echo esc_attr(get_the_title($features_id)); ?></option>
+		<?php while($query->have_posts()){ 
+			$query->the_post();
+		?>
+			<option <?php selected(get_the_ID(),$features_id); ?> value="<?php echo get_the_ID(); ?>"><?php echo get_the_title(); ?></option>
 		<?php } ?>
 	</select>
 	<!--section table features-->
 	<br>
 	<br>
 	<div id="eddpf_section_features">
-		<?php if(count($eddpf_features)>0){ ?>
+		<?php if($eddpf_features){ ?>
 			<table width="100%" cellspacing="0" border="1">
 			<tr>
 				<th style="width: 20%;"><?php _e('Title','edd-features-group') ?></th>
 				<th style="width: 70%;"><?php _e('Description','edd-features-group') ?></th>
-				<th style="width: 5%;">Yes</th>
-				<th style="width: 5%;">No</th>
+				<th style="width: 5%;"><?php _e('Yes','edd-features-group') ?></th>
+				<th style="width: 5%;"><?php _e('No','edd-features-group') ?></th>
 			</tr>
 			<?php 
 			$cont = 0;
@@ -389,8 +322,8 @@ function eddpf_features_setting_callback($post) {
 			<tr>
 				<td style="width: 20%;"><input type="text" readonly="readonly" value="<?php echo esc_attr($value['title']); ?>" name="eddpf_title[]"></td>
 				<td style="width: 70%;"><input style="width: 100%;"  type="text" readonly="readonly" value="<?php echo esc_attr($value['description']); ?>" name="eddpf_description[]"></td>
-				<td style="width: 5%;"><input <?php checked($eddpf_features[$data_index]['yes_no'],'yes'); ?> type="checkbox" name="yes_no[]" value="yes"></td>
-				<td style="width: 5%;"><input <?php checked($eddpf_features[$data_index]['yes_no'],'no'); ?> type="checkbox" name="yes_no[]" value="no"></td>
+				<td style="width: 5%;"><input <?php checked($eddpf_features_single[$data_index]['yes_no'],'yes'); ?> type="checkbox" name="yes_no[]" value="yes"></td>
+				<td style="width: 5%;"><input <?php checked($eddpf_features_single[$data_index]['yes_no'],'no'); ?> type="checkbox" name="yes_no[]" value="no"></td>
 			</tr>
 			<?php
 				} 
@@ -398,7 +331,7 @@ function eddpf_features_setting_callback($post) {
 			</table>
 		<?php } ?>
 	</div>
-
+	
 <?php
 }
 
@@ -407,13 +340,13 @@ function eddpf_save_features_setting($post){
 	global $post_type;
 	if($post_type!='eddpf_postype') {
 
-		$_POST['eddpf_title'] = isset( $_POST['eddpf_title'] ) ? (array) $_POST['eddpf_title'] : array();	
+		$eddpf_title = isset( $_POST['eddpf_title'] ) ? (array) $_POST['eddpf_title'] : array();	
 		$eddpf_title = eddpf_sanitize_values($eddpf_title);
 
-		$_POST['eddpf_description'] = isset( $_POST['eddpf_description'] ) ? (array) $_POST['eddpf_description'] : array();	
+		$eddpf_description = isset( $_POST['eddpf_description'] ) ? (array) $_POST['eddpf_description'] : array();	
 		$eddpf_description = eddpf_sanitize_values($eddpf_description);
 		
-		$_POST['yes_no'] = isset( $_POST['yes_no'] ) ? (array) $_POST['yes_no'] : array();	
+		$yes_no = isset( $_POST['yes_no'] ) ? (array) $_POST['yes_no'] : array();	
 		$yes_no = eddpf_sanitize_values($yes_no);
 		
 		$features_id = isset($_POST['eddpf_select2_posts']) ? sanitize_text_field($_POST['eddpf_select2_posts']) : '';
@@ -433,7 +366,7 @@ function eddpf_save_features_setting($post){
 			));
 			$cont++;
 		}
-		update_post_meta($post,'eddpf_features_setting',$data);
+		update_post_meta($post,'eddpf_features_single',$data);
 		update_post_meta($post, 'eddpf_features_id',$features_id);
 	}//closed if
 }
@@ -443,7 +376,7 @@ function eddpf_shortcode() {
 	$html = '';
 	$have = '';
 	$dont = '';
-	$eddpf_features_setting = get_post_meta(get_the_id(),'eddpf_features_setting',true);
+	$eddpf_features_single = get_post_meta(get_the_id(),'eddpf_features_single',true);
 	$features_id = get_post_meta(get_the_id(), 'eddpf_features_id',true);
 	$eddpf_features = get_post_meta($features_id,'eddpf_features',true);
 
