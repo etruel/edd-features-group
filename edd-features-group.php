@@ -32,7 +32,6 @@ function eddpf_checking_postype($postype)
 function eddpf_enqueue()
 {
 	global $post;
-
 	if(isset($post->post_type)){
 		if($post->post_type=='eddpf_postype'){
 			wp_enqueue_script('eddpf_postype_js', plugin_dir_url( __FILE__ ).'assets/js/eddpf_postype.js',array('jquery'));
@@ -50,9 +49,12 @@ function eddpf_enqueue()
 			));
 		}
 	}
-
-	//wp_enqueue_style('eddpf_enqueue_css', plugin_dir_url( __FILE__ ).'assets/css/eddpf_enqueue.css' );
-	//wp_enqueue_style('style_enqueue_css', plugin_dir_url( __FILE__ ).'assets/css/style.css' );
+	if(isset($_GET['page']) && $_GET['page']=='eddpf_config_postype'){
+		wp_enqueue_script('select2_js', plugin_dir_url( __FILE__ ).'assets/js/select2.js',array('jquery'));
+		wp_enqueue_style('select2_css', plugin_dir_url( __FILE__ ).'assets/css/select2.css' );
+		wp_add_inline_script( 'jquery-migrate', 'jQuery(document).ready(function($){$(".js-example-basic-multiple").select2();});' );
+	}
+	
 }
 //create settings page
 add_action('admin_menu', 'eddpf_submenu_settings');
@@ -85,38 +87,40 @@ function eddpf_data_callback(){
 		wp_redirect(admin_url('edit.php?post_type=eddpf_postype&page=eddpf_config_postype'));
 		
 }	
+
+//-----------------SETTINGS PAGE FEATURE GROUP---------------------
 function eddpf_config_postype(){
 	$eddpf_postype_settings = get_option('eddpf_postype_settings',array());
 	$eddpf_cpostype=get_post_types();
 	$checked_val='';
 	$post_val = 0;
-	echo '<form action="'.admin_url( 'admin-post.php' ).'" method="POST">';
-	wp_nonce_field( 'eddpf_nonce_post', 'eddpf_nonce_post-field' );		 
-	echo '<input type="hidden" name="action" value="eddpf_data">';
-	echo '<br><table width="300px" style="background-color:white;">';
-	echo '<caption style="font-size:20px; padding-bottom:10px; ">'.__('Set the Post Types with features Group','edd-features-group').'</caption>';
-	foreach ($eddpf_cpostype as $data_value => $value) {
-			if($data_value!='eddpf_postype'){
-				$checked_val = '';
-				if(count($eddpf_postype_settings)>0){
-					$post_val = array_search($data_value,$eddpf_postype_settings);
-				}
-				?>
-				<tr>
-				<td style="padding:10px;">
-					<input type="checkbox" <?php checked($eddpf_postype_settings[$post_val],$data_value); ?> name="eddpf_postype[]"  value="<?php echo esc_attr($data_value) ?>"> <?php echo $data_value; ?>
-				</td>
-				</tr>
-				<?php
-			}	
-	}
-	echo '<tr>
-		<td colspan="2" style="padding:15px;"><input type="submit" value="'.__("Save Data","edd-features-group").'" class="button button-primary"></td>
-	</tr>';
-	echo '</table>
-	</form>';
+?>
+<h3><?php _e('Set the Post Types with features Group','edd-features-group'); ?></h3>
+<form action="<?php echo admin_url( 'admin-post.php' ); ?>" method="POST">
+	<?php wp_nonce_field( 'eddpf_nonce_post', 'eddpf_nonce_post-field' ); ?> 
+	<input type="hidden" name="action" value="eddpf_data">
+	<select class="js-example-basic-multiple" name="eddpf_postype[]" multiple="multiple" style="width: 90%;">
+	 <?php 	
+	 		foreach ($eddpf_cpostype as $data_value => $value) { 
+	 		if(count($eddpf_postype_settings)>0){
+				$post_val = array_search($data_value,$eddpf_postype_settings);
+			}
+			$eddpf_postype_settings[$post_val] = isset($eddpf_postype_settings[$post_val]) ? $eddpf_postype_settings[$post_val] : '';
 
+	 	?>
+	  	<option <?php selected($eddpf_postype_settings[$post_val],$data_value); ?> value="<?php echo esc_attr($data_value) ?>"><?php echo $data_value; ?></option>
+		<?php  } ?>
+	</select>
+	<br>
+	<br>
+	<input type="submit" value="<?php _e("Save Data","edd-features-group"); ?>" class="button button-primary">
+
+</form>
+
+<?php
 }
+//-----------------SETTINGS PAGE FEATURE GROUP CLOSED---------------------
+
 
 //Custom Post Type
 add_action('in_admin_header', 'features_list_help');

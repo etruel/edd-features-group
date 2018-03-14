@@ -9,7 +9,7 @@ jQuery(document).ready(function($){
 		$("#eddpf_table").append(add_feature);
 	});
 		$(document).on('click','.eddpf_delete',function(){
-			object = $(this);
+			object = $(this).parent().parent();
 			inputex = $(this).parent().parent().find('input[type=text]').val();
 			textarea = $(this).parent().parent().find('textarea').val();
 			if(inputex!='' || textarea!='') {
