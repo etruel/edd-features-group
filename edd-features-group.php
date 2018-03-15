@@ -190,7 +190,11 @@ function eddpf_add_metabox_callback($post) {
 				<td><input type="text" name="eddpf_title[]" value="<?php echo esc_attr($value['title']); ?>"></td>
 				<td><label><?php _e('Description','edd-features-group') ?></label></td>
 				<td><textarea name="eddpf_description[]" rows="3"><?php echo esc_attr($value['description']);  ?></textarea></td>
-				<td style="width: 5%;"><?php if($data_index>0) echo '<button type="button" class="button eddpf_delete" title="'._e("Delete","edd-features-group").'">X</button>'; ?></td>
+				<td style="width: 5%;"><?php if($data_index>0){?> 
+					<button type="button" title="<?php _e('Delete','edd-features-group') ?>" class="button eddpf_delete"><span title="Delete" class="dashicons dashicons-no"></span></button>
+					<?php } ?>
+				</td>
+
 			</tr>	
 			<?php } 
 			}?>
@@ -384,7 +388,7 @@ function eddpf_shortcode() {
 	$features_id = get_post_meta(get_the_id(), 'eddpf_features_id',true);
 	$eddpf_features = get_post_meta($features_id,'eddpf_features',true);
 
-	if(count($eddpf_features>0)){
+	if($eddpf_features){
 		$html.= '
 		<table class="su_freepro">
 		<tbody>
@@ -396,12 +400,13 @@ function eddpf_shortcode() {
 				<td class="">'.__("No","edd-features-group").'</td>
 			</tr>
 			<tr>';
+			
 		foreach ($eddpf_features as $data_index => $value) {
-			if(!isset($eddpf_features[$data_index])){
-				$eddpf_features[$data_index]['yes_no'] = '';
+			if(!isset($eddpf_features_single[$data_index])){
+				$eddpf_features_single[$data_index]['yes_no'] = '';
 			}
-			if($eddpf_features[$data_index]['yes_no']!=''){
-				if($eddpf_features[$data_index]['yes_no']=='yes'){
+			if($eddpf_features_single[$data_index]['yes_no']!=''){
+				if($eddpf_features_single[$data_index]['yes_no']=='yes'){
 					$have = 'have';
 					$dont = '';
 				}else{
