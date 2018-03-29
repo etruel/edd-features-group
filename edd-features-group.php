@@ -425,7 +425,7 @@ function eddpf_shortcode() {
 				'.$value['description'].'
 				</div>
 				</div></td>
-				<td class="'.$dont.'"></td>
+				<td class="'.$free.'"></td>
 				<td class="'.$pro.'"></td>
 				</tr>';
 			}//close if child for
