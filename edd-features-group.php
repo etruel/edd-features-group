@@ -384,6 +384,8 @@ function eddpf_shortcode() {
 	$html = '';
 	$have = '';
 	$dont = '';
+	$free = '';
+	$pro = 'have';
 	$eddpf_features_single = get_post_meta(get_the_id(),'eddpf_features_single',true);
 	$features_id = get_post_meta(get_the_id(), 'eddpf_features_id',true);
 	$eddpf_features = get_post_meta($features_id,'eddpf_features',true);
@@ -396,8 +398,8 @@ function eddpf_shortcode() {
 			<td>
 				<h3>'.__("Features","edd-features-group").'</h3>
 			</td>
-				<td class="">'.__("Yes","edd-features-group").'</td>
-				<td class="">'.__("No","edd-features-group").'</td>
+				<td class="">'.__("FREE","edd-features-group").'</td>
+				<td class="">'.__("PRO","edd-features-group").'</td>
 			</tr>
 			<tr>';
 			
@@ -407,11 +409,13 @@ function eddpf_shortcode() {
 			}
 			if($eddpf_features_single[$data_index]['yes_no']!=''){
 				if($eddpf_features_single[$data_index]['yes_no']=='yes'){
-					$have = 'have';
-					$dont = '';
+					//$have = 'have';
+					//$dont = '';
+					$free = 'have';
 				}else{
-					$have = '';
-					$dont = 'dont';
+					//$have = '';
+					//$dont = 'dont';
+					$free = 'dont';
 				}
 				$html.='<tr>
 				<td>
@@ -422,7 +426,7 @@ function eddpf_shortcode() {
 				</div>
 				</div></td>
 				<td class="'.$dont.'"></td>
-				<td class="'.$have.'"></td>
+				<td class="'.$pro.'"></td>
 				</tr>';
 			}//close if child for
 		}
