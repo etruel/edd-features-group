@@ -296,22 +296,7 @@ function eddpf_ajax_post_callback(){
 	if( $search_results->have_posts() ) :
 		while( $search_results->have_posts() ) : $search_results->the_post();	
 			$eddpf_features = get_post_meta($search_results->post->ID, 'eddpf_features', true);
-			if($cont==0){
-				$features_template.='
-				<div>
-				      <div>
-				      		<p>
-				      			<span style="margin-left: 20px !important;"><b>'.__("Title","edd-features-group").'</b></span>
-				      			<span style="position: relative; margin-left: 150px !important;"><b>'.__("Description","edd-features-group").'</b></span>
-				      			<span style="float: right !important;">
-									<span><b>'.__("Yes","edd-features-group").'</b></span>
-									<span><b>'.__("No","edd-features-group").'</b></span>
-				      			</span>
-				      		</p>
-				      	</div>
-				</div>';
-				$cont+=1;
-			}
+	
 			foreach ($eddpf_features as $data_index => $value) {
 				$features_template.='<div class="sortitem">
 		        <span class="sorthandle"></span>
@@ -376,14 +361,8 @@ function eddpf_features_single_callback($post) {
 	<!--section table features-->
 	<br>
 	<br>
-	<div id="eddpf_section_features" data-callback="">	
-	<?php  
-		if(count($eddpf_features_single)>1){
-			foreach ($eddpf_features_single as $dataindex => $value) {
-				if($dataindex==0){
-				?>
+	<div>
 				<div>
-				      	<div>
 				      		<p>
 				      			<span style="margin-left: 20px !important;"><b><?php _e("Title","edd-features-group") ?></b></span>
 				      			<span style="position: relative; margin-left: 150px !important;"><b><?php _e("Description","edd-features-group") ?></b></span>
@@ -393,8 +372,12 @@ function eddpf_features_single_callback($post) {
 				      			</span>
 				      		</p>
 				      	</div>
-				</div>
-				<?php } ?>
+	</div>
+	<div id="eddpf_section_features" data-callback="">	
+	<?php  
+		if(count($eddpf_features_single)>1){
+			foreach ($eddpf_features_single as $dataindex => $value) {
+			?>
 
 				<div class="sortitem">
 				        <span class="sorthandle"></span>
