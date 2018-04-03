@@ -24,10 +24,21 @@ jQuery(function($){
 									template_features = text[2];
 								});
 								$("#eddpf_section_features").html(template_features);
+								$("#eddpf_section_features").vSort();
 							}
 		           });
 		       }//clear
 			});
-			//$(document).on("change","#eddpf_select2_posts",function(){
-			//});
+			
+			 $(document).on('change','.check_yes,.check_no',function(){
+			 	namesort = $(this).parent().parent().find('input.eddpf_sort');
+			 	if($(this).parent().parent().find('.check_yes').is(':checked')){
+			 		namesort.val("yes");
+			 	}else if($(this).parent().parent().find('.check_no').is(':checked')){
+			 		namesort.val("no");
+			 	}else{
+			 		namesort.val("hidden");
+			 	}
+		     	
+		 	});
 });
