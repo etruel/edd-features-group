@@ -76,7 +76,7 @@ jQuery(function($){
 			 	}else{
 			 		$('.yes_all').attr('checked',false);
 			 		$('.check_yes').attr('checked',false);
-			 		$('.check_no').attr('checked',true);
+			 		$('.check_no').attr('checked',false);
 			 		$("input.eddpf_sort").val("hidden");
 			 	}
 		 	});	
