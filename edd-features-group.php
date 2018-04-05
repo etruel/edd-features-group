@@ -363,15 +363,23 @@ function eddpf_features_single_callback($post) {
 	<br>
 	<div>
 				<div>
-				      		<p>
-				      			<span style="margin-left: 20px !important;"><b><?php _e("Title","edd-features-group") ?></b></span>
-				      			<span style="position: relative; margin-left: 150px !important;"><b><?php _e("Description","edd-features-group") ?></b></span>
-				      			<span style="float: right !important;">
-									<span><b><?php _e("Yes","edd-features-group") ?></b></span>
-									<span><b><?php _e("No","edd-features-group") ?></b></span>
-				      			</span>
-				      		</p>
-				      	</div>
+					<p>
+				      <span style="margin-left: 20px !important;"><b><?php _e("Title","edd-features-group") ?></b></span>
+				      	<span style="position: relative; margin-left: 150px !important;"><b><?php _e("Description","edd-features-group") ?></b></span>
+				      	<span style="float: right !important;">
+							<span><b><?php _e("Yes","edd-features-group") ?></b></span>
+							<span><b><?php _e("No","edd-features-group") ?></b></span>
+				      	</span>
+				      	</p>
+				      	<p style="float: right !important;">
+				      		<b><?php _e("Select All","edd-features-group"); ?></b>
+							<span><input type="checkbox" class="yes_all" name="yes_all"></span>
+							<span><input type="checkbox" class="no_all" name="no_all"></span>
+				      	</p>
+				      	<div style="clear: both;"></div>
+
+				  </div>
+			
 	</div>
 	<div id="eddpf_section_features" data-callback="">	
 	<?php  

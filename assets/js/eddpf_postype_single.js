@@ -31,14 +31,54 @@ jQuery(function($){
 			});
 			
 			 $(document).on('change','.check_yes,.check_no',function(){
+			 	result = $(this).val();
 			 	namesort = $(this).parent().parent().find('input.eddpf_sort');
 			 	if($(this).parent().parent().find('.check_yes').is(':checked')){
-			 		namesort.val("yes");
-			 	}else if($(this).parent().parent().find('.check_no').is(':checked')){
-			 		namesort.val("no");
+			 		}else if($(this).parent().parent().find('.check_no').is(':checked')){
 			 	}else{
 			 		namesort.val("hidden");
 			 	}
-		     	
+			 	if(result=='yes'){
+			 		$(this).parent().parent().find('.check_no').attr('checked',false);
+			 		if($(this).is(':checked')){
+			 			namesort.val("yes");
+			 		}
+			 	}else if(result=="no"){
+			 		$(this).parent().parent().find('.check_yes').attr('checked',false);
+			 		if($(this).is(':checked')){
+			 			namesort.val("no");
+			 		}
+			 	}
+
+			 	
 		 	});
+
+			 $(document).on('change','.yes_all',function(){
+			 	if($(this).is(':checked')){
+			 		$('.no_all').attr('checked',false);
+			 		$('.check_no').attr('checked',false);
+			 		$('.check_yes').attr('checked',true);
+			 		$("input.eddpf_sort").val("yes");
+			 	}else{
+			 		$('.no_all').attr('checked',false);
+			 		$('.check_no').attr('checked',false);
+			 		$('.check_yes').attr('checked',false);
+			 		$("input.eddpf_sort").val("hidden");
+
+			 	}
+		 	});	
+			$(document).on('change','.no_all',function(){
+			 	if($(this).is(':checked')){
+			 		$('.yes_all').attr('checked',false);
+			 		$('.check_yes').attr('checked',false);
+			 		$('.check_no').attr('checked',true);
+			 		$("input.eddpf_sort").val("no");	
+			 	}else{
+			 		$('.yes_all').attr('checked',false);
+			 		$('.check_yes').attr('checked',false);
+			 		$('.check_no').attr('checked',true);
+			 		$("input.eddpf_sort").val("hidden");
+			 	}
+		 	});	
+
 });
