@@ -449,40 +449,38 @@ function eddpf_shortcode() {
 		<table class="su_freepro">
 		<tbody>
 			<tr>
-			<td>
-				<h3>'.__("Features","edd-features-group").'</h3>
-			</td>
+				<td><h3>'.__("Features","edd-features-group").'</h3></td>
 				<td class="">'.__("FREE","edd-features-group").'</td>
 				<td class="">'.__("PRO","edd-features-group").'</td>
-			</tr>
-			<tr>';
-			
+			</tr>';
 		foreach ($eddpf_features_single as $data_index => $value) {
-
 			if($eddpf_features_single[$data_index]['yes_no']!='hidden'){
 				if($eddpf_features_single[$data_index]['yes_no']=='yes'){
-					//$have = 'have';
-					//$dont = '';
 					$free = 'have';
 				}else{
-					//$have = '';
-					//$dont = 'dont';
 					$free = 'dont';
 				}
-				$html.='<tr>
-				<td>
-				<div class="su-spoiler su-spoiler-style-default su-spoiler-icon-arrow-circle-1 freepro"><div class="su-spoiler-title">
-				<span class="su-spoiler-icon"></span>'.$eddpf_features_single[$data_index]['title'].'</div>
-				<div class="su-spoiler-content su-clearfix">
-				'.$eddpf_features_single[$data_index]['description'].'
-				</div>
-				</div></td>
-				<td class="'.$free.'"></td>
-				<td class="'.$pro.'"></td>
+				$html.='
+				<tr>
+					<td>
+						<div class="su-spoiler su-spoiler-style-default su-spoiler-icon-arrow-circle-1 freepro su-spoiler-closed">
+							<div class="su-spoiler-title">
+							<span class="su-spoiler-icon"></span>'.$eddpf_features_single[$data_index]['title'].'
+							</div>
+							<div class="su-spoiler-content su-clearfix">
+							'.$eddpf_features_single[$data_index]['description'].'
+							</div>
+						</div>
+					</td>
+					<td class="'.$free.'"></td>
+					<td class="'.$pro.'"></td>
 				</tr>';
 			}//close if child for
 		}
-		$html.='</tbody></table>';	
+		$html.='
+		</tbody>
+	</table>';	
 	}//closed if
 	return $html;
 }
+
