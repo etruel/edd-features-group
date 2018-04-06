@@ -444,23 +444,23 @@ function eddpf_save_features_setting($post){
 //Add shortcode
 add_shortcode('edd-features-group','eddpf_shortcode');
 function eddpf_shortcode() {	
+	ob_start();
 	$html = '';
 	$have = '';
 	$dont = '';
 	$free = '';
 	$pro = 'have';
 	$eddpf_features_single = get_post_meta(get_the_id(),'eddpf_features_single',true);
-	$features_id = get_post_meta(get_the_id(), 'eddpf_features_id',true);
-
-	if($eddpf_features_single){
-		$html.= '
+	if(!empty($eddpf_features_single)){
+	?>
 		<table class="su_freepro">
 		<tbody>
 			<tr>
-				<td><h3>'.__("Features","edd-features-group").'</h3></td>
-				<td class="">'.__("FREE","edd-features-group").'</td>
-				<td class="">'.__("PRO","edd-features-group").'</td>
-			</tr>';
+				<td><h3><?php echo __("Features","edd-features-group");  ?></h3></td>
+				<td><?php echo __("FREE","edd-features-group");  ?></td>
+				<td><?php echo __("PRO","edd-features-group");  ?></td>
+			</tr>
+	<?php
 		foreach ($eddpf_features_single as $data_index => $value) {
 			if($eddpf_features_single[$data_index]['yes_no']!='hidden'){
 				if($eddpf_features_single[$data_index]['yes_no']=='yes'){
@@ -468,27 +468,38 @@ function eddpf_shortcode() {
 				}else{
 					$free = 'dont';
 				}
-				$html.='
-				<tr>
-					<td>
-						<div class="su-spoiler su-spoiler-style-default su-spoiler-icon-arrow-circle-1 freepro su-spoiler-closed">
-							<div class="su-spoiler-title">
-							<span class="su-spoiler-icon"></span>'.$eddpf_features_single[$data_index]['title'].'
-							</div>
-							<div class="su-spoiler-content su-clearfix">
-							'.$eddpf_features_single[$data_index]['description'].'
-							</div>
+			?>
+			<tr>
+				<td>
+					<div class="su-spoiler su-spoiler-style-default su-spoiler-icon-arrow-circle-1 freepro su-spoiler-closed">
+						<div class="su-spoiler-title">
+							<span class="su-spoiler-icon"></span>
+							<?php echo $eddpf_features_single[$data_index]['title']; ?>
 						</div>
-					</td>
-					<td class="'.$free.'"></td>
-					<td class="'.$pro.'"></td>
-				</tr>';
+						<div class="su-spoiler-content su-clearfix">
+							<?php echo $eddpf_features_single[$data_index]['description']; ?>
+						</div>
+					</div>
+				</td>
+				<td class="<?php echo $free; ?>"></td>
+				<td class="<?php echo $pro; ?>"></td>
+			</tr>
+		<?php
 			}//close if child for
 		}
-		$html.='
+		?>
+		<tr>
+			<td style="vertical-align: middle; text-align: center; font-size: 1.4em;">
+				<strong><?php echo __("Get WPeMatico Right Now!","edd-features-group");  ?></strong></td>
+			<td class=""><span class="su-tooltip" data-close="no" data-behavior="hover" data-my="center right" data-at="center left" data-classes="su-qtip qtip-green su-qtip-size-3 qtip-rounded" data-title="" title="Download Free version&lt;br /&gt;
+			from WordPress repository"><a href="https://downloads.wordpress.org/plugin/wpematico.zip" class="su-button su-button-style-default" style="color:#FFFFFF;background-color:#2D89EF;border-color:#246ebf;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px" target="_self" rel="nofollow"><span style="color:#FFFFFF;padding:5px 14px;font-size:12px;line-height:18px;border-color:#6cacf4;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;text-shadow:none;-moz-text-shadow:none;-webkit-text-shadow:none"><i class="fa fa-wordpress" style="font-size:12px;color:#FFFFFF"></i> Get</span></a></span></td>
+				<td class=""><span class="su-tooltip" data-close="no" data-behavior="hover" data-my="center left" data-at="center right" data-classes="su-qtip qtip-green su-qtip-size-3 qtip-rounded" data-title="" title="Go to select license type&lt;br /&gt;
+			and buy now PRO Version!"><a href="#secondary" class="su-button su-button-style-default" style="color:#FFFFFF;background-color:#2D89EF;border-color:#246ebf;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px" target="_self"><span style="color:#FFFFFF;padding:5px 14px;font-size:12px;line-height:18px;border-color:#6cacf4;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;text-shadow:none;-moz-text-shadow:none;-webkit-text-shadow:none"><i class="fa fa-graduation-cap" style="font-size:12px;color:#FFFFFF"></i> Buy</span></a></span></td>
+			</tr>
 		</tbody>
-	</table>';	
+	</table>
+	<?php
 	}//closed if
-	return $html;
+	 return ob_get_clean();
 }
 
